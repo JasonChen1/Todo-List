@@ -18,8 +18,10 @@
   "homepage": "https://github.com/JasonChen1/Todo-List#readme",
   "dependencies": {
     "body-parser": "^1.15.0",
+    "consolidate": "^0.14.1",
     "express": "^4.13.4",
+    "pg": "^4.5.5",
     "pg-native": "^1.10.0",
-    "pg":"^4.5.5"
+    "swig": "^1.4.2"
   }
 }
