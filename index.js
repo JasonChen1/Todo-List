@@ -36,8 +36,9 @@ app.use(function (req, res, next) {
     next();
 });
 
+//setting path for static files
 app.use(express.static(__dirname + '/public'));
-
+//setting path for view files and engine to for viewing e.g. html 
 app.set('views', __dirname +'/views');
 app.engine('html', eng.swig);
 app.set('view engine','html');
