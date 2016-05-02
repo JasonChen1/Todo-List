@@ -18,17 +18,7 @@ function redraw(data){
 	//console.log('redrawing',data);
 }
 
-/*var $taskItem = $(this).parent('li');
-		$taskItem.slideUp(250, function() {
-		var $this = $(this);
-		//remove the selected element from the todo-list but it still exists in the memory
-		$this.detach();
-		//move the detached element to the completed list
-		$('#completed-list').prepend($this);
-		$this.slideDown();
-		});*/
-
-
+//add new item to the web
 function add_To_Web(data,list){
 	if (data === '') { return false; } 
 	var taskHTML = '<li><span class="done">%</span>';
@@ -50,6 +40,8 @@ function add_To_Web(data,list){
 }
 
 
+
+
 $(document).ready(function(e) {
 
 	get_task();
@@ -64,19 +56,35 @@ $(document).ready(function(e) {
 	$('#new-todo').dialog({
 		modal : true, autoOpen : false,
 		buttons : {
-			"Add task" : function () { 
+			"Add task" : function () { 				
 				//check to make sure the taskName variable doesn't contain an empty string
 				var taskName = $('#task').val();
-				if (taskName === '') { return false; } 
-				var taskHTML = '<li><span class="done">%</span>';
-				taskHTML += '<span class="delete">x</span>';
-				taskHTML += '<span class="task"></span></li>';
-				var $newTask = $(taskHTML);
-				$newTask.find('.task').text(taskName);
-				//close dialog box once a new task is added
-				$newTask.hide();
-				$('#todo-list').prepend($newTask);
-				$newTask.show('clip',250).effect('highlight',1000);
+				//posting new items using ajax
+				$.ajax({
+					method:'PUT',
+					url:'http://130.195.4.177:8080/put/task',
+					dataType:'json',
+					data:{"item":taskName,complete:false},
+
+					success: function(res){
+						if (taskName === '') { return false; } 
+						var taskHTML = '<li><span class="done">%</span>';
+						taskHTML += '<span class="delete">x</span>';
+						taskHTML += '<span class="task"></span></li>';
+						var $newTask = $(taskHTML);
+						$newTask.find('.task').text(taskName);
+						//close dialog box once a new task is added
+						$newTask.hide();
+						add_To_Web(taskName,false);
+						//$('#todo-list').prepend($newTask);
+						$newTask.show('clip',250).effect('highlight',1000);
+					},
+					error: function(res){
+						console.log("Error: fail to add new task");
+					}
+
+				})
+				
 				$(this).dialog('close');
 			},
 
@@ -98,6 +106,7 @@ $(document).ready(function(e) {
 		$this.slideDown();
 		});
 	});
+	
 	$('.sortlist').sortable({
 		connectWith : '.sortlist',//connecting the todo list with the completed list 
 		cursor : 'pointer',//change mouse cursor to pointer when item being dragged

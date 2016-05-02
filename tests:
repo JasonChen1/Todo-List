@@ -1,5 +1,5 @@
 tests:
-get hostname:
+get ip address:
 hostname -i
 
 curl <ip address>:8080/get

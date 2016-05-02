@@ -8,12 +8,12 @@ app.use(bodyParser.urlencoded({ // to support URL­ encoded bodies
 extended: true
 }));
 var eng = require('consolidate');
- //setting path for static files
+//setting path for static files
 app.use(express.static(__dirname ));
 
 
 var pg = require('pg').native;
-var connectionString = "postgres://chendifu:asfads.@depot:5432/chendifu_nodejs";
+var connectionString = "postgres://chendifu:sadfsdf.@depot:5432/chendifu_nodejs";
 /*var connectionString = process.env.DATABASE_URL
 	,client
 	,query;*/
@@ -67,62 +67,28 @@ app.get('/get/tasks', function (req, res) {
 	});
 });
 
+app.put('/put/task', function(req, res){
+	var item = req.body.item;
+	var query = client.query("insert into todo (item,complete) values (\'"+item+"\','false')");
+
+	var newItem = {"item": item};
+	res.send(newItem);
+});
+
+
+
+app.post('/post/task', function(req, res){
+	var item = req.body.item;
+	var completed = req.body.complete;
+	var query = client.query("update chendifu_nodejs set complete = "+completed+" where item = \'"+item+"\'");
+
+	var newItem ={"item":item, "complete":completed};
+
+	res.send(newItem);
+});
+
 
 /*
-
-//console.log("Registering endpoint: /");
-//Accessible at localhost:8080/
-app.get('/', function (req, res) {
-	res.send('Hello World!');
-	query = client.query('select * from todo');
-
-	//stream results back one row at a time
-	query.on('row',function(row){
-		results.push(row);
-	});
-
-	//After all data is returned, close connection and return results
-	query.on('end',function(){
-		response.json(results);
-	});
-});
-
-//Accessible at localhost:8080/get/tasks/
-app.get('/get/tasks/', function (req, res) {
-	res.send('This is a task.');
-	// Extend this later to return tasks from the database.
-});
-
-app.get('/database',function(req,res){
-	//SQL Query select Data
-	var query = client.query("select * from todo");
-	var results=[]
-	//stream results back one row at a time
-	query.on('row',function(row){
-		results.push(row);
-	});
-
-	//After all data is returned, close connection and return results
-	query.on('end',function(){
-		response.json(results);
-	});
-});
-
-
-// Define an error log that will print error messages to the console.
-var ERROR_LOG = console.error.bind(console);
-// A GET request. If successful, this passesdata to the ‘redraw()’ function
-function get_task(){
-	console.log("Get task.")
-	$ajax({
-		url: "http://localhost:8080/get/tasks/"
-	}).then(redraw, ERROR_LOG);
-
-	// Redraw the two lists
-	function redraw(data) {
-		console.log('redrawing', data);
-	}
-}
 
 app.post('/', function(req, res){
 	res.send('post request');
