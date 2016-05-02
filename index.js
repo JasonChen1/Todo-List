@@ -1,25 +1,29 @@
+
 var express = require('express');
 var app = express();
 var port = process.env.PORT || 8080;
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser');
 app.use(bodyParser.json()); // to support JSON­encoded bodies
 app.use(bodyParser.urlencoded({ // to support URL­encoded bodies
 extended: true
 }));
 var eng = require('consolidate');
- 
-/*
+ //setting path for static files
+app.use(express.static(__dirname ));
+
+
 var pg = require('pg').native;
-//var connectionString = "postgres://chendifu:asfads.@depot:5432/chendifu_nodejs";
-var connectionString = process.env.DATABASE_URL
+var connectionString = "postgres://chendifu:asfads.@depot:5432/chendifu_nodejs";
+/*var connectionString = process.env.DATABASE_URL
 	,client
-	,query;
+	,query;*/
 var client = new pg.Client(connectionString);
 client.connect();
 
-query = client.query('create table todo (id serial primary key, item varchar(255))');
+//query = client.query('create table todo (id serial primary key, item varchar(255))');
+query = client.query('select * from todo');
 query.on('end',function(result){client.end();});
-*/
+
 
 // Add headers
 app.use(function (req, res, next) {
@@ -36,8 +40,7 @@ app.use(function (req, res, next) {
     next();
 });
 
-//setting path for static files
-app.use(express.static(__dirname + '/public'));
+
 //setting path for view files and engine to for viewing e.g. html 
 app.set('views', __dirname +'/views');
 app.engine('html', eng.swig);
@@ -46,7 +49,7 @@ app.set('view engine','html');
 //Accessible at localhost:8080/
 app.get('/', function (req, res) {
 	//res.send('Hello World!');
-	res.render('index');
+	res.render('index.html');
 });
 
 //Accessible at localhost:8080/get/tasks/
