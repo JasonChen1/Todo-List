@@ -3,8 +3,8 @@ var express = require('express');
 var app = express();
 var port = process.env.PORT || 8080;
 var bodyParser = require('body-parser');
-app.use(bodyParser.json()); // to support JSON­encoded bodies
-app.use(bodyParser.urlencoded({ // to support URL­encoded bodies
+app.use(bodyParser.json()); // to support JSON­ encoded bodies
+app.use(bodyParser.urlencoded({ // to support URL­ encoded bodies
 extended: true
 }));
 var eng = require('consolidate');
@@ -21,8 +21,8 @@ var client = new pg.Client(connectionString);
 client.connect();
 
 //query = client.query('create table todo (id serial primary key, item varchar(255))');
-query = client.query('select * from todo');
-query.on('end',function(result){client.end();});
+/*query = client.query('select * from todo');
+query.on('end',function(result){client.end();});*/
 
 
 // Add headers
@@ -48,15 +48,25 @@ app.set('view engine','html');
 
 //Accessible at localhost:8080/
 app.get('/', function (req, res) {
-	//res.send('Hello World!');
 	res.render('index.html');
 });
 
 //Accessible at localhost:8080/get/tasks/
-app.get('/get/tasks/', function (req, res) {
-	res.send('This is a task.');
-	// Extend this later to return tasks from the database.
+app.get('/get/tasks', function (req, res) {
+	//SQL Query select Data
+	var query = client.query("select * from todo");
+	var results=[];
+	//stream results back one row at a time
+	query.on('row',function(row){
+		results.push(row);
+	});
+
+	//After all data is returned, close connection and return results
+	query.on('end',function(){
+		res.json(results);
+	});
 });
+
 
 /*
 
