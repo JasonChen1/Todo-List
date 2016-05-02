@@ -1,4 +1,3 @@
-
 var express = require('express');
 var app = express();
 var port = process.env.PORT || 8080;
@@ -13,7 +12,7 @@ app.use(express.static(__dirname ));
 
 
 var pg = require('pg').native;
-var connectionString = "postgres://chendifu:sadfsdf.@depot:5432/chendifu_nodejs";
+var connectionString = "postgres://chendifu:1234.@depot:5432/chendifu_nodejs";
 /*var connectionString = process.env.DATABASE_URL
 	,client
 	,query;*/
@@ -67,61 +66,39 @@ app.get('/get/tasks', function (req, res) {
 	});
 });
 
+//accessibble at ipaddress:8080/put/tasks
 app.put('/put/task', function(req, res){
-	var item = req.body.item;
-	var query = client.query("insert into todo (item,complete) values (\'"+item+"\','false')");
+	var nItem = req.body.item;
+	var query = client.query("insert into todo (item,complete) values (\'"+nItem+"\','false')");
 
-	var newItem = {"item": item};
+	var newItem = {"item": nItem,"complete":false};
 	res.send(newItem);
 });
 
 
-
+//accessible at ipAddress:8080/post/task
 app.post('/post/task', function(req, res){
-	var item = req.body.item;
+	var nItem = req.body.item;
 	var completed = req.body.complete;
-	var query = client.query("update chendifu_nodejs set complete = "+completed+" where item = \'"+item+"\'");
-
-	var newItem ={"item":item, "complete":completed};
-
+	var query = client.query("update todo set complete = "+completed+" where item = \'"+nItem+"\'");
+	//create the item for sending
+	var newItem ={"item":nItem, "complete":completed};
+	//send new item to DB
 	res.send(newItem);
 });
 
 
-/*
 
-app.post('/', function(req, res){
-	res.send('post request');
+app.delete('/delete/task', function(req, res){
+	var delItem = req.body.item;
+	var completed =req.body.complete;
+
+	var query = client.query("delete from todo where item = \'"+delItem+"\' and complete = \'"+completed+"\'");
+
+	var deleteItem = {"item":delItem, "complete": completed};
+	res.send(deleteItem);
 });
 
-function complete_task(task){
-	$ajax({
-		method:'POST',
-		url: 'http://localhost:8080/complete/task',
-		data: JSON.stringify({
-			task: task.find('.task').html()
-		}),
-		contentType:"application/json",
-		dataType:"json"
-	}).then(
-		function success_func(data){
-			//Function that handles successes
-			console.log('posted data.',data);
-		},
-		ERROR_LOG
-	);
-}
-
-
-app.delete('/', function(req, res){
-	res.send('delete request');
-});
-
-
-app.put('/', function(req, res){
-	res.send('put request');
-});
-*/
 
 
 app.listen(port, function () {
