@@ -1,4 +1,4 @@
-tests:
+tests
 get ip address:
 hostname -i
 
