@@ -1,4 +1,4 @@
-var express = require('express');
+var express =require('express');
 var app = express();
 var port = process.env.PORT || 8080;
 var bodyParser = require('body-parser');
@@ -94,9 +94,12 @@ app.post('/post/task', function(req, res){
 	var query = client.query("update todo set complete = "+completed+" where id = \'"+itemId+"\'RETURNING id,item,complete");
 	var results =[];
 
+	//create new item to client
+	var re ={"id": itemId,"item":nItem,"complete":completed};
+
 	//stream results back one row at a time
 	query.on('row',function(row){
-		results.push(row);
+		results.push(re);
 		//console.log(results);
 	});
 
@@ -106,8 +109,7 @@ app.post('/post/task', function(req, res){
 	});
 });
 
-
-
+//accessible at ipAddress:8080/delete/task
 app.delete('/delete/task', function(req, res){
 	var delItem = req.body.item;
 	var completed =req.body.complete;
@@ -116,13 +118,6 @@ app.delete('/delete/task', function(req, res){
 	var query = client.query("delete from todo where id = "+itemID+"RETURNING id,item,complete");
 	//var query = client.query("delete from todo where item = \'"+delItem+"\' and complete = \'"+completed+"\'");
 	var results =[];
-	//var deleteItem = {"item":delItem, "complete": completed};
-	//var deleteItem = {"id":item};
-
-	//After all data is returned, close connection and return results
-	/*query.on('end',function(){	
-		res.send(deleteItem);
-	});*/
 
 	//stream results back one row at a time
 	query.on('row',function(row){
@@ -135,8 +130,6 @@ app.delete('/delete/task', function(req, res){
 		res.json(results);
 	});
 });
-
-
 
 app.listen(port, function () {
 	console.log("Todo-List app listening on port: "+port+"!");

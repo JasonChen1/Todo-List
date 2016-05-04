@@ -74,7 +74,6 @@ $(document).ready(function(e) {
 
 					success: function(data,status){
 						redraw(data);
-						//add_To_Web(taskName,false,data.id);
 					},
 					error: function(data,status){
 						console.log("Error: fail to add new task: "+data.item);
@@ -95,6 +94,7 @@ $(document).ready(function(e) {
 		var $taskItem = $(this).parent('li');
 		//items name 
 		var compItem = $taskItem.find('.task').text();
+		//items id
 		var itemID = $taskItem.find('.id').text();
 		//console.log(itemID);
 
@@ -127,43 +127,45 @@ $(document).ready(function(e) {
 		cursor : 'pointer',//change mouse cursor to pointer when item being dragged
 		placeholder : 'ui-state-highlight',//highlights the space in the list where a user can drop an item
 		cancel : '.delete,.done',//identifies elements on a list item that won’t work as handles for dragging the item
-		update: function(event, ui){
-			/*alert(ui.item.attr('id'));
-			var id = ui.item.attr('id');
-			var prevId = ui.item.prev().attr('id');*/
+		
+		receive: function(event, ui){
+			var itemName = ui.item.find('.text').text();
+			var itemId = ui.item.find('.id').text()
+			//var list = $(this)[0].id;
+			var list = ui.sender.attr('id');
+			var completed = false;
 
-			//console.log(ui.item.text());
-			//console.log(ui.item.attr('task'));
-			//console.log($(ui.item).prev().attr('id'));
-			
-			//updateDB(id,prevId);
+			if(list ==="completed-list"){
+				completed = false;
+				//console.log(list);
+			}
+			else{
+				completed = true;
+				//console.log(list);
+			}
+			//console.log(list+" : "+completed);
+
+			updateDB(itemName,itemId,completed);
 		}
 		
 	});
 
-	/*function updateDB(id){
-		//console.log(id);
+	function updateDB(item,id,completed){
 		$.ajax({
 			method:'POST',
 			url:ipAddress+'/post/task',
 			dataType:'json',
-			data:{"item":compItem,"complete":true},
-
-			success: function(){
-				$taskItem.slideUp(250, function() {
-					var $this = $(this);
-					//remove the selected element from the todo-list but it still exists in the memory
-					$this.detach();
-					//move the detached element to the completed list
-					add_To_Web(compItem,true);
-					$this.slideDown();
-				});
+			data:{"item":item,"complete":completed,"id":id},
+				
+			success: function(data,status){		
+				//move the detached element to the completed list
+				redraw(data);
 			},
-			error: function(){
-				console.log("Error: fail to move task");
+			error: function(data,status){
+				console.log("Error: fail to move task: "+data.item);
 			}
 		});
-	}*/
+	}
 
 	//Code included inside $( document ).ready() will only run once the page Document Object Model (DOM) is ready for JavaScript code to execute
 	$(document).ready(function() {
