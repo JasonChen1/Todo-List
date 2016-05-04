@@ -1,4 +1,4 @@
-var ipAddress = "http://130.195.4.177:8080";
+var ipAddress = "http://130.195.4.167:8080";
 
 //getting items from databse
 var ERROR_LOG = console.error.bind(console);
@@ -14,19 +14,25 @@ function get_task(){
 function redraw(data){
 
 	for(i = 0; i<data.length; i++){
-		add_To_Web(data[i].item,data[i].complete);
+		add_To_Web(data[i].item,data[i].complete,data[i].id);
+		//console.log(data[i].id);
 	}
 	//console.log('redrawing',data);
 }
 
 //add new item to the web
-function add_To_Web(data,list){
+function add_To_Web(data,list,id){
 	if (data === '') { return false; } 
 	var taskHTML = '<li><span class="done">%</span>';
 	taskHTML += '<span class="delete">x</span>';
-	taskHTML += '<span class="task"></span></li>';
+	taskHTML += '<span class="task"></span>';
+	taskHTML +='<span class="id"></span></li>';
 	var $newTask = $(taskHTML);
 	$newTask.find('.task').text(data);
+	$newTask.find('.id').text(id);
+	$newTask.find('.id').hide();
+	//console.log($newTask.find('.task').text());
+	//console.log($newTask.find('.id').text());
 
 	//close dialog box once a new task is added
 	$newTask.hide();
@@ -58,29 +64,21 @@ $(document).ready(function(e) {
 			"Add task" : function () { 				
 				//check to make sure the taskName variable doesn't contain an empty string
 				var taskName = $('#task').val();
+				//console.log(data);
 				//posting new items using ajax
 				$.ajax({
 					method:'PUT',
 					url:ipAddress+'/put/task',
 					dataType:'json',
-					data:{"item":taskName,"complete":false},
+					data:{"item":taskName},
 
-					success: function(){
-						if (taskName === '') { return false; } 
-						var taskHTML = '<li><span class="done">%</span>';
-						taskHTML += '<span class="delete">x</span>';
-						taskHTML += '<span class="task"></span></li>';
-						var $newTask = $(taskHTML);
-						$newTask.find('.task').text(taskName);
-						//close dialog box once a new task is added
-						$newTask.hide();
-						$('#todo-list').prepend($newTask);
-						$newTask.show('clip',250).effect('highlight',1000);
+					success: function(data,status){
+						redraw(data);
+						//add_To_Web(taskName,false,data.id);
 					},
-					error: function(){
-						console.log("Error: fail to add new task");
+					error: function(data,status){
+						console.log("Error: fail to add new task: "+data.item);
 					}
-
 				});
 				
 				$(this).dialog('close');
@@ -96,26 +94,29 @@ $(document).ready(function(e) {
 	$('#todo-list').on('click', '.done', function() {
 		var $taskItem = $(this).parent('li');
 		//items name 
-		var compItem = $(this).parent('li').find('.task').text();
-		//console.log(compItem);
+		var compItem = $taskItem.find('.task').text();
+		var itemID = $taskItem.find('.id').text();
+		//console.log(itemID);
+
 		$.ajax({
 			method:'POST',
 			url:ipAddress+'/post/task',
 			dataType:'json',
-			data:{"item":compItem,"complete":true},
+			data:{"item":compItem,"complete":true,"id":itemID},
 
-			success: function(){
+			success: function(data,status){
 				$taskItem.slideUp(250, function() {
 					var $this = $(this);
 					//remove the selected element from the todo-list but it still exists in the memory
 					$this.detach();
 					//move the detached element to the completed list
-					add_To_Web(compItem,true);
+					redraw(data);
+
 					$this.slideDown();
 				});
 			},
-			error: function(){
-				console.log("Error: fail to move task");
+			error: function(data,status){
+				console.log("Error: fail to move task: "+data.item);
 			}
 		});
 		
@@ -173,10 +174,10 @@ $(document).ready(function(e) {
 
 	$('.sortlist').on('click','.delete',function() {
 
-		temp= $(this).parent('li');//store the value into a temporary variable
-		var tempItem = $(this).parent('li').find('.task').text();
-
-		//console.log($(this).parent('li').find('.task').text());
+		var temp= $(this).parent('li');//store the value into a temporary variable
+		var tempItem = temp.find('.task').text();
+		var itemID = temp.find('.id').text();
+		//console.log($(this).parent('li').find('.id').text());
 
 		$('#new-delete').dialog({
 			buttons : {
@@ -186,8 +187,8 @@ $(document).ready(function(e) {
 						method:'DELETE',
 						url:ipAddress+'/delete/task',
 						dataType:'json',
-						data:{"item":tempItem,"complete":false},
-						//data:{"item":tempItem,"complete":true},
+						//data:{"id":tempId},
+						data:{"item":tempItem,"complete":true,"id":itemID},
 
 						success: function(){							
 							temp.effect('puff', function() { $(this).remove(); });
@@ -205,8 +206,6 @@ $(document).ready(function(e) {
 				}
 			}
 		});
-
 		$('#new-delete').dialog('open');	
 	});
-
 }); // end ready

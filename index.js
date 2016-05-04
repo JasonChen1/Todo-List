@@ -19,11 +19,6 @@ var connectionString = "postgres://chendifu:1234.@depot:5432/chendifu_nodejs";
 var client = new pg.Client(connectionString);
 client.connect();
 
-//query = client.query('create table todo (id serial primary key, item varchar(255))');
-/*query = client.query('select * from todo');
-query.on('end',function(result){client.end();});*/
-
-
 // Add headers
 app.use(function (req, res, next) {
     // Website you wish to allow to connect
@@ -68,23 +63,47 @@ app.get('/get/tasks', function (req, res) {
 
 //accessibble at ipaddress:8080/put/tasks
 app.put('/put/task', function(req, res){
+	var itemID = req.body.id;
 	var nItem = req.body.item;
-	var query = client.query("insert into todo (item,complete) values (\'"+nItem+"\','false')");
+	
+	//query for inserting items
+	var query = client.query("insert into todo (item,complete) values (\'"+nItem+"\','false') RETURNING id,item,complete");
+	var results =[];
+	//creating a new item to insert
 
-	var newItem = {"item": nItem,"complete":false};
-	res.send(newItem);
+	//stream results back one row at a time
+	query.on('row',function(row){
+		results.push(row);
+		//console.log(results);
+	});
+
+	//after all the data is returned close connection and return result
+	query.on('end',function(){
+		res.json(results);
+	});
 });
 
 
 //accessible at ipAddress:8080/post/task
 app.post('/post/task', function(req, res){
+	//getting data from page
+	var itemId = req.body.id;
 	var nItem = req.body.item;
 	var completed = req.body.complete;
-	var query = client.query("update todo set complete = "+completed+" where item = \'"+nItem+"\'");
-	//create the item for sending
-	var newItem ={"item":nItem, "complete":completed};
-	//send new item to DB
-	res.send(newItem);
+
+	var query = client.query("update todo set complete = "+completed+" where id = \'"+itemId+"\'RETURNING id,item,complete");
+	var results =[];
+
+	//stream results back one row at a time
+	query.on('row',function(row){
+		results.push(row);
+		//console.log(results);
+	});
+
+	//after all the data is returned close connection and return result
+	query.on('end',function(){
+		res.json(results);
+	});
 });
 
 
@@ -92,17 +111,35 @@ app.post('/post/task', function(req, res){
 app.delete('/delete/task', function(req, res){
 	var delItem = req.body.item;
 	var completed =req.body.complete;
+	var itemID = req.body.id;
 
-	var query = client.query("delete from todo where item = \'"+delItem+"\' and complete = \'"+completed+"\'");
+	var query = client.query("delete from todo where id = "+itemID+"RETURNING id,item,complete");
+	//var query = client.query("delete from todo where item = \'"+delItem+"\' and complete = \'"+completed+"\'");
+	var results =[];
+	//var deleteItem = {"item":delItem, "complete": completed};
+	//var deleteItem = {"id":item};
 
-	var deleteItem = {"item":delItem, "complete": completed};
-	res.send(deleteItem);
+	//After all data is returned, close connection and return results
+	/*query.on('end',function(){	
+		res.send(deleteItem);
+	});*/
+
+	//stream results back one row at a time
+	query.on('row',function(row){
+		results.push(row);
+		//console.log(results);
+	});
+
+	//after all the data is returned close connection and return result
+	query.on('end',function(){
+		res.json(results);
+	});
 });
 
 
 
 app.listen(port, function () {
-	console.log('Todo-List app listening on port 8080!');
+	console.log("Todo-List app listening on port: "+port+"!");
 });
 
 
