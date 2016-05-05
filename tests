@@ -1,5 +1,18 @@
 tests
-get ip address:
-hostname -i
 
-curl <ip address>:8080/get
+get ip address:
+$hostname -i
+
+e.g ip address = 130.195.6.22
+
+Test GET:
+%curl 130.195.6.22:8080/get/tasks
+
+Test PUT:
+ %curl -i -H "Accept: application/json" -X PUT -d 'item=test&complete=false' 130.195.6.22:8080/put/task
+
+Test POST:
+%curl -i -H "Accept: application/json" -X POST -d 'id=56&item=test&complete=true' 130.195.6.22:8080/post/task
+
+Test DELETE:
+%curl -i -H "Accept: application/json" -X delete -d 'id=56' 130.195.6.22:8080/delete/task

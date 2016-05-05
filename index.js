@@ -91,15 +91,15 @@ app.post('/post/task', function(req, res){
 	var nItem = req.body.item;
 	var completed = req.body.complete;
 
-	var query = client.query("update todo set complete = "+completed+" where id = \'"+itemId+"\'RETURNING id,item,complete");
+	var query = client.query("update todo set complete = "+completed+" where id = \'"+itemId+"\' RETURNING id,item,complete");
 	var results =[];
 
 	//create new item to client
-	var re ={"id": itemId,"item":nItem,"complete":completed};
+	var itm ={"id": itemId,"item":nItem,"complete":completed};
 
 	//stream results back one row at a time
 	query.on('row',function(row){
-		results.push(re);
+		results.push(itm);
 		//console.log(results);
 	});
 
@@ -115,8 +115,7 @@ app.delete('/delete/task', function(req, res){
 	var completed =req.body.complete;
 	var itemID = req.body.id;
 
-	var query = client.query("delete from todo where id = "+itemID+"RETURNING id,item,complete");
-	//var query = client.query("delete from todo where item = \'"+delItem+"\' and complete = \'"+completed+"\'");
+	var query = client.query("delete from todo where id = "+itemID+" RETURNING id,item,complete");
 	var results =[];
 
 	//stream results back one row at a time
