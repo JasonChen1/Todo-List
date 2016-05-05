@@ -10,12 +10,15 @@ var eng = require('consolidate');
 //setting path for static files
 app.use(express.static(__dirname ));
 
-
 var pg = require('pg').native;
+//local connection string
 var connectionString = "postgres://chendifu:1234.@depot:5432/chendifu_nodejs";
+
 /*var connectionString = process.env.DATABASE_URL
 	,client
 	,query;*/
+
+
 var client = new pg.Client(connectionString);
 client.connect();
 
@@ -33,7 +36,6 @@ app.use(function (req, res, next) {
     // Pass to next layer of middleware
     next();
 });
-
 
 //setting path for view files and engine to for viewing e.g. html 
 app.set('views', __dirname +'/views');
