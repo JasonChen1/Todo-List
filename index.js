@@ -61,9 +61,9 @@ app.get('/get/tasks', function (req, res) {
 		res.json(results);
 	});
 
-	/*query.on('error',function(){
+	query.on('error',function(){
 		res.status(500).send('Error, fail to get item: '+nItem);
-	});*/
+	});
 
 });
 
