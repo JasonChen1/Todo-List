@@ -8,7 +8,7 @@ extended: true
 }));
 var eng = require('consolidate');
 //setting path for static files
-app.use(express.static(__dirname ));
+app.use(express.static(__dirname +'/'));
 
 var pg = require('pg').native;
 //local connection string
@@ -60,6 +60,11 @@ app.get('/get/tasks', function (req, res) {
 	query.on('end',function(){
 		res.json(results);
 	});
+
+	query.on('error',function(){
+		res.status(500).send('Error, fail to get item: '+nItem);
+	});
+
 });
 
 //accessibble at ipaddress:8080/put/tasks
@@ -81,6 +86,10 @@ app.put('/put/task', function(req, res){
 	//after all the data is returned close connection and return result
 	query.on('end',function(){
 		res.json(results);
+	});
+
+	query.on('error',function(){
+		res.status(500).send('Error, fail to put item: '+nItem);
 	});
 });
 
@@ -108,6 +117,10 @@ app.post('/post/task', function(req, res){
 	query.on('end',function(){
 		res.json(results);
 	});
+
+	query.on('error',function(){
+		res.status(500).send('Error, fail to update item: '+nItem+'complete: '+completed);
+	});
 });
 
 //accessible at ipAddress:8080/delete/task
@@ -129,6 +142,11 @@ app.delete('/delete/task', function(req, res){
 	query.on('end',function(){
 		res.json(results);
 	});
+
+	query.on('error',function(){
+		res.status(500).send('Error, fail to delete id:'+itemID +'item: '+nItem+'complete: '+completed);
+	});
+
 });
 
 app.listen(port, function () {

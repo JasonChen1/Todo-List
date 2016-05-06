@@ -38,10 +38,25 @@ views/index.html				-webpage
 
 Error handling:
 
+Service Side:
+
 GET: 		if fail to get the data from database there will be Error message 												showing in the console of the webpage.
 
 PUT: 		if fail to add item, ajax call failed it will output an error message 											"Error: fail to add new task: item".
 
 POST: 		if fail to move item, ajax call failed it will ouput an error message											"Error: fail to move task: item"
 
-DELETE: 	if fail to delete item, ajax call failed it will ouput an error message											"Error: fail to delete task: item"
+DELETE: 	if fail to delete item, ajax call failed it will ouput an error message	
+				"Error: fail to delete task: item"
+
+
+Client side:
+
+GET: 		if fail to get the data from database it will output an Error message 												"res.status(500).send('Error, fail to get item: '+nItem);".
+
+PUT: 		if fail to add item, ajax call failed it will output an error message 											"res.status(500).send('Error, fail to put item: '+nItem);".
+
+POST: 		if fail to move item, ajax call failed it will ouput an error message											"res.status(500).send('Error, fail to update item: '+nItem+'complete: '+completed);".
+
+DELETE: 	if fail to delete item, ajax call failed it will ouput an error message	
+			"res.status(500).send('Error, fail to delete id:'+itemID +'item: '+nItem+'complete: '+completed);".
