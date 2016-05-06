@@ -1,5 +1,5 @@
 //var ipAddress = "http://130.195.4.162:8080";
-var ipAddress = "infinite-ravine-93444.herokuapp.com";
+var ipAddress = "http://infinite-ravine-93444.herokuapp.com";
 
 //getting items from databse
 var ERROR_LOG = console.error.bind(console);
