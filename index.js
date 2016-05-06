@@ -12,12 +12,11 @@ app.use(express.static(__dirname ));
 
 var pg = require('pg').native;
 //local connection string
-var connectionString = "postgres://chendifu:1234.@depot:5432/chendifu_nodejs";
+//var connectionString = "postgres://chendifu:1234.@depot:5432/chendifu_nodejs";
 
-/*var connectionString = process.env.DATABASE_URL
+var connectionString = process.env.DATABASE_URL
 	,client
-	,query;*/
-
+	,query;
 
 var client = new pg.Client(connectionString);
 client.connect();

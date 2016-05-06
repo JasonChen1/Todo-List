@@ -1,4 +1,5 @@
-var ipAddress = "http://130.195.4.167:8080";
+//var ipAddress = "http://130.195.4.162:8080";
+var ipAddress = "still-woodland-76970.herokuapp.com";
 
 //getting items from databse
 var ERROR_LOG = console.error.bind(console);
