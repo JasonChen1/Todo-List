@@ -8,7 +8,7 @@ extended: true
 }));
 var eng = require('consolidate');
 //setting path for static files
-app.use(express.static(__dirname +'/'));
+app.use(express.static(__dirname ));
 
 var pg = require('pg').native;
 //local connection string
