@@ -1,4 +1,9 @@
-To run it locally 
+Running it on the service:
+
+http://infinite-ravine-93444.herokuapp.com/
+
+
+Running it locally:
 
 First open konsole and cd into the Todo-List directory. 
 Then use the folloing command to get the ip address:
@@ -10,6 +15,10 @@ Then open the todo.js in directory "public/js/todo.js" and change the "ipAddress
 var ipAddress = "http://<your ip address>:8080";   
 e.g. var ipAddress = "http://130.195.4.167:8080";
 
+Then open index.js file and commend out the following line:
+	"var connectionString = process.env.DATABASE_URL;"
+and un comment the following line:
+	"//var connectionString = "postgres://chendifu:1234.@depot:5432/chendifu_nodejs";"
 
 Then you can execute the code. To execute the code use the following command:
 
@@ -18,9 +27,27 @@ Then you can execute the code. To execute the code use the following command:
 When "Todo-List app listening on port: 8080!" show up
 Then open a web browser type in "http://localhost:8080/"
 
+=============================================
+To test the REST interface
 
-If you want to test the REST interface you can use the test command from the "tests.txt" file
-(The test result is in the "test result.pdf" file).
+open konsole and input the following command:
+
+Test GET:
+%curl http://infinite-ravine-93444.herokuapp.com/get/tasks
+
+Test PUT:
+ %curl -i -H "Accept: application/json" -X PUT -d 'item=test&complete=false' http://infinite-ravine-93444.herokuapp.com/put/task
+
+Test POST:
+%curl -i -H "Accept: application/json" -X POST -d 'id=6&item=test&complete=true' http://infinite-ravine-93444.herokuapp.com/post/task
+
+Test DELETE:
+%curl -i -H "Accept: application/json" -X delete -d 'id=6' http://infinite-ravine-93444.herokuapp.com/delete/task
+
+test result is showing in the "test result.pdf".
+
+=============================================
+
 
 =============================================
 Files: 
